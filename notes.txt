@@ -1,0 +1,107 @@
+registers on x86:
+
+general-purpose:
+%eax
+%ebx
+%ecx
+%edx
+%edi
+%esi
+
+special-purpose:
+%ebp	@details best for base pointer addressing mode on x86(faster than f.ex. %eax)
+%esp
+%eip
+%eflags
+
+if source is a digit prefixed with a dollar($) sign, that means that it represents 
+an actual digit instead of an address in memory.
+
+ex.
+mov $0,	%edi	# move zero(0) to %edi register
+mov 0,	%edi	# move the contents of address '0' to %edi register
+
+addressing modes:
+
+The general form of address reference is this:
+ADDRESS_OR_OFFSET(%BASE_OR_OFFSET,%INDEX,MULTIPLIER)
+  @details	FINAL ADDRESS = ADDRESS_OR_OFFSET + %BASE_OR_OFFSET + MULTIPLIER + %INDEX
+
+1.immediate mode
+  @brief 	the data to access is embedded into the instruction
+  @ex		mov $0, %edi
+2.register addressing mode
+  @brief	the instruction contains a register to access
+  @ex		mov %edx, %edi
+3.direct addressing mode
+  @brief	the instruction contains the memory address to access
+  @ex		mov 2012, %edx		# loads %edx with the value at memory adrress 2012
+4.indexed addressing mode
+  @brief	the instruction contains a memory address to access, and and `index register` 
+		is also specified to offset that address
+  @ex		mov 2012(,%edi,) %eax
+5.indirect addressing mode
+  @brief	the instruction contains a register that contains a pointer to where the data
+		should be accessed
+  @ex		mov 2012, %edx
+		add (%edx), %eax	# adds the value from the adrress indicated by %edx register to %eax
+  @ex		movl (%esp), %eax	# move whatever is on top of the stack to %eax
+6.base pointer addressing mode
+  @brief	same as `indirect addressing mode`, but an `offset` is also specified
+  @ex		mov 4(%edx), %eax
+  @ex		movl 4(%esp), %eax	# access data right below the top of the stack
+  
+layout of the %eax register
+
+    <--------%eax------->
+    _____________________
+    |    |    | %ah| %al|
+    '''''''''''''''''''''
+               <--%ax--->
+               
+               
+functions:
+
+  @brief	function directive:
+  @ex		.type function_name,@function	# where function_name is replaced with the name of
+						# the function
+  @details	the `.type` directive tells the linker that `function_name` is a function. This isn't
+		really needed unless we were using `function_name` in other programs. The line that
+		says `function_name:` gives the symbol `function_name` the sotrage location of the
+		next instruction
+  @brief	when programming functions, you are supposed to put the parameters of the function
+		on top of the stack rigt before you call it.
+  @ex		_start:
+		  pushl $4
+		  call function_name	# in this case the function takes one paramter(number 4)
+  @details	the `call` instruction also pushes the return address onto the stack
+  @details	how the stack looks like at this moment
+		_____________________
+		|_________$4_________|
+		|_________ret________|<--%esp
+		|____________________|
+		
+files:
+
+  @brief	open file system call (number 5)
+  @details	registers:
+		%eax	=	syscall number
+		%ebx	=	the address of the first char of the file name
+		%ecx	=	r/w modes (0 - read, 03101 - write)
+		%edx	=	permissions (@ex	0666)
+		return:
+		Linux will return file descriptor in %eax
+		
+  @brief	read file system call (number 3)
+  @details	registers:
+		%ebx	=	file descriptor
+		%ecx	=	buffer
+		%edx	=	buffer size
+		return:
+		bytes read
+		return error:
+		negative numbers
+		
+  @brief	close file system call (number 6)
+  @details	registers:
+		%edx	=	file descriptor

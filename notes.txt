@@ -105,3 +105,29 @@ files:
   @brief	close file system call (number 6)
   @details	registers:
 		%edx	=	file descriptor
+
+sections:
+
+  @brief	.section - The .section command breaks your program up into sections.
+  @ex		.section .data
+		This command starts the data section, where you list any memory storage you will need for data.
+		
+  @brief	.data - This section contains initialized variables (In C: This section contains static
+		and global variables). 
+  @details	This section is not read-only and can be altered at runtime.
+  
+  @brief	.bss - Contains un-initialized variables (In C: Global and static variables that are filled solely
+		with zero-valued data initially).
+  @details	Since the BSS segment only holds variables that don't have any value yet, it doesn't actually 
+		need to store the image of these variables. The size that BSS will require at runtime is recorded
+		in the object file, but BSS (unlike the data segment) doesn't take up any actual space in the 
+		object file.
+		
+  @brief	.text tells the assemblr that the upcoming section is considered assembly language instructions.
+  
+  
+  
+  
+  
+  
+  
